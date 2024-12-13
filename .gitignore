@@ -9,7 +9,7 @@
 /coverage
 
 # production
-/dist
+/build
 
 # misc
 .DS_Store
@@ -17,6 +17,8 @@
 .env.development.local
 .env.test.local
 .env.production.local
+.env.development
+.env.production
 /.vscode/*
 !/.vscode/extensions.json
 .idea
