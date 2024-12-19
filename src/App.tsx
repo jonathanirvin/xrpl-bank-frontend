@@ -29,6 +29,7 @@ import '@ionic/react/css/text-alignment.css';
 import '@ionic/react/css/text-transformation.css';
 
 /* Theme variables */
+import BankAccount from './pages/BankAccount/BankAccount';
 import Login from './pages/Login/Login';
 import MyWallet from './pages/MyWallet/MyWallet';
 import Profile from './pages/Profile/Profile';
@@ -55,6 +56,9 @@ const App: React.FC = () => (
           </Route>
           <Route path="/register">
             <Register />
+          </Route>
+          <Route path="/bank-account">
+            <BankAccount />
           </Route>
 
           <Route exact path="/">

@@ -6,11 +6,11 @@ import { useHistory } from 'react-router-dom';
 const Profile: React.FC = () => {
     const [ email, setEmail ] = useState<string>( '' );
     const history = useHistory();
+    const token = localStorage.getItem( 'jwt' );
+    
 
     useEffect( () => {
-        const token = localStorage.getItem( 'jwt' );
         if ( !token ) {
-            // If no token, redirect to login
             history.push( '/login' );
             return;
         }
@@ -25,15 +25,18 @@ const Profile: React.FC = () => {
             } )
             .catch( error => {
                 console.error( 'Error fetching profile: ', error );
-                // If token invalid or any error, redirect to login
                 history.push( '/login' );
             } );
-    }, [ history ] );
+    }, [] );
 
     const handleLogout = () => {
         localStorage.removeItem( 'jwt' );
         history.push( '/login' );
     };
+
+    const viewBankAccount = () => {
+        history.push( '/bank-account' );
+    }
 
     return (
         <IonPage>
@@ -47,6 +50,9 @@ const Profile: React.FC = () => {
                 {email ? (
                     <div>
                         <h2>Welcome, {email}!</h2>
+                        
+                        <IonButton onClick={viewBankAccount} color="success">Bank Account</IonButton> <br /><br />
+
                         <IonButton onClick={handleLogout} color="danger">Logout</IonButton>
                     </div>
                 ) : (
