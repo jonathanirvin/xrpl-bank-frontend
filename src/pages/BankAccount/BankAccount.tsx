@@ -1,7 +1,10 @@
 import { IonButton, IonContent, IonHeader, IonInput, IonLabel, IonPage, IonTitle, IonToolbar } from '@ionic/react';
+import { Elements } from '@stripe/react-stripe-js';
+import { loadStripe } from '@stripe/stripe-js';
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
+import StripeForm from '../../components/StripeForm/StripeForm';
 
 const BankAccount: React.FC = () => {
     const [ email, setEmail ] = useState<string>( '' );
@@ -11,6 +14,8 @@ const BankAccount: React.FC = () => {
     const [ xrpAddress, setXrpAddress ] = useState<string>( '' );
     const [ amount, setAmount ] = useState<string>( '' );
     const [ depositAmount, setDepositAmount ] = useState<string>( '' );
+
+    const stripePromise = loadStripe( import.meta.env.VITE_STRIPE_API_KEY || '' );
     
     useEffect( () => {
         if ( !token ) {
@@ -66,32 +71,6 @@ const BankAccount: React.FC = () => {
             } );
     };
 
-    // Deposit fiat => stablecoin
-    const depositFunds = () => {
-        const depositFloat = parseFloat( depositAmount );
-        if ( isNaN( depositFloat ) || depositFloat <= 0 ) {
-            alert( 'Please enter a valid deposit amount' );
-            return;
-        }
-
-        const depositRequestBody = {
-            amountToDeposit: depositFloat
-        };
-
-        axios.post(
-            `${ import.meta.env.VITE_API_URL }/bank-accounts/deposit`,
-            depositRequestBody,
-            { headers: { Authorization: `Bearer ${ token }` } }
-        )
-            .then( response => {
-                console.log( 'Deposit successful:', response.data );
-                setBankAccount( response.data ); // Maybe store the new updated bank account
-            } )
-            .catch( error => {
-                console.error( 'Error depositing funds: ', error );
-            } );
-    };
-
     return (
         <IonPage>
             <IonHeader>
@@ -123,15 +102,11 @@ const BankAccount: React.FC = () => {
                         <IonButton onClick={sendPayment} color="primary">Send Transaction</IonButton>
 
                         <h3>Deposit (Fiat/Stripe to Bank Stablecoin)</h3>
-                        <IonLabel>Amount</IonLabel>
-                        <IonInput
-                            value={depositAmount}
-                            onIonChange={e => setDepositAmount( e.detail.value! )}
-                            placeholder="Enter deposit amount"
-                        />
-                        <IonButton onClick={depositFunds} color="primary">
-                            Deposit
-                        </IonButton>
+                        
+                        <Elements stripe={stripePromise}>
+                            <StripeForm />
+                        </Elements>
+
 
                         {/* Optionally show updated bank account data */}
                         {bankAccount && (
